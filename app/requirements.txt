@@ -1,0 +1,27 @@
+# NLP and AI Libraries
+feedparser
+spacy
+google-api-python-client
+langdetect
+googletrans==4.0.0rc1
+transformers
+scipy
+emoji
+textblob
+scikit-learn
+networkx
+matplotlib
+numpy
+python-dateutil
+torch  
+Pillow
+
+# gRPC for backend API
+grpcio
+grpcio-tools
+
+# HTTP requests and API calls
+requests
+
+# Frontend Libraries (Gradio or Streamlit)
+gradio  # or streamlit

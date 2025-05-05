@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+service TrendStoryService {
+    rpc GetStory (TrendStoryRequest) returns (TrendStoryResponse);
+}
+
+message TrendStoryRequest {
+    string tones = 1;
+    string themes = 2;
+    string styles = 3;
+    string language = 4;
+}
+
+message TrendStoryResponse {
+    string response = 1; 
+    bytes image_data = 2;
+}
+

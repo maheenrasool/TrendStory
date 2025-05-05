@@ -1,0 +1,17 @@
+name: trendstory-env
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip
+  - pip:
+      - gradio
+      - numpy
+      - grpcio
+      - fastapi
+      - pandas
+      - uvicorn
+      - huggingface-hub
+      - pydub
+      - ffmpeg-python
