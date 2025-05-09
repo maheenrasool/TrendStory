@@ -1,0 +1,24 @@
+yake
+grpcio
+grpcio-tools
+requests
+gradio
+
+# NLP and AI Libraries
+feedparser
+google-api-python-client
+langdetect
+googletrans==4.0.0rc1
+transformers
+scipy
+emoji
+# textblob
+nltk
+
+scikit-learn
+networkx
+matplotlib
+numpy
+python-dateutil
+torch  
+Pillow
