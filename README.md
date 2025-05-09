@@ -201,7 +201,7 @@ python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. TrendStory.pr
             │    Gradio UI       │
             │  (Story + Graphs)  │
             └────────────────────┘
-
+<pre> 🧠 Architecture Overview +---------------------+ | User (UI) | | Gradio Frontend | +----------+----------+ | Trend Preferences (gRPC Request) | +----------v----------+ | gRPC Client | | (client.py) | +----------+----------+ | +----------v----------+ | gRPC Server | | (server.py) | +----------+----------+ | +----------v----------+ | StoryMaker Module | | - Filter Trends | | - Build Graphs | | - Create Prompt | | - Call Ollama | +----------+----------+ | +------------------------+------------------------+ | | +--------v--------+ +----------v-----------+ | TrendCleaner.py | | TrendExtrAnalyzer.py | | - Keep top 3 | | - YouTube + News API | | - Pre-testing | | - Sentiment/Keywords | +-----------------+ | - TF-IDF, Categorize | +----------------------+ | +----------v----------+ | Story + Graphs | +----------+----------+ | +----------v----------+ | Gradio UI | | (Story + Graphs) | +---------------------+ </pre>
 ```
 [PC1/client.py] ── gRPC ──> [PC0/server.py] ──> [StoryMaker.py]
                                   │
