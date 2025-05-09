@@ -1,0 +1,357 @@
+{
+  "info": {
+    "_postman_id": "f4b0d44c-3d19-4872-984e-2ea3eac539eb",
+    "name": "TrendStory Microservice Full Tests",
+    "description": "Extensive test cases for the TrendStory service. Includes normal, invalid, and extreme edge case tests to verify robustness.\n\n**Note**: The service is a gRPC backend accessed via HTTP wrapper. Ensure server is running before use.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get Trend Story - Valid Minimal Request",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Response structure is correct\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('story');",
+              "    pm.expect(jsonData.story).to.be.a('string');",
+              "    pm.expect(jsonData.story.length).to.be.greaterThan(50);",
+              "    pm.expect(jsonData.story.toLowerCase()).to.not.include('error');",
+              "});",
+              "",
+              "pm.test(\"Response time is acceptable\", function () {",
+              "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"style\": [\"Minimal\"],\n  \"theme\": [\"Inspirational\"],\n  \"category\": [\"Sports\"]\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/get_trend_story",
+          "host": ["{{base_url}}"],
+          "path": ["get_trend_story"]
+        },
+        "description": "Basic valid request to generate an inspirational minimal sports story."
+      }
+    },
+    {
+      "name": "Get Trend Story - Multiple Styles and Themes",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test(\"Story is sufficiently complex\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('story');",
+              "    pm.expect(jsonData.story.split('.').length).to.be.above(5); // at least 5 sentences",
+              "});",
+              "",
+              "pm.test(\"Story includes style or theme words\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.story.toLowerCase()).to.satisfy(function(text) {",
+              "        return text.includes('fun') || text.includes('adventure') || text.includes('joy') || text.includes('fast-paced');",
+              "    });",
+              "});",
+              "",
+              "pm.test(\"Response time is below 1500ms\", function () {",
+              "    pm.expect(pm.response.responseTime).to.be.below(1500);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"style\": [\"Fast-Paced\", \"Vivid\"],\n  \"theme\": [\"Adventure\", \"Fun\"],\n  \"category\": [\"Travel\", \"Lifestyle\"]\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/get_trend_story",
+          "host": ["{{base_url}}"],
+          "path": ["get_trend_story"]
+        },
+        "description": "Test complex request with multiple styles, themes, and categories."
+      }
+    },
+    {
+      "name": "Get Trend Story - Empty Arrays (Invalid Input)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "",
+              "pm.test(\"Proper error message returned\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('error');",
+              "    pm.expect(jsonData.error).to.match(/please select/i);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"style\": [],\n  \"theme\": [],\n  \"category\": []\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/get_trend_story",
+          "host": ["{{base_url}}"],
+          "path": ["get_trend_story"]
+        },
+        "description": "Test invalid request where all input arrays are empty."
+      }
+    },
+    {
+      "name": "Get Trend Story - Very Large Input Arrays",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400 or 413\", function () {",
+              "    pm.expect(pm.response.code === 400 || pm.response.code === 413).to.be.true;",
+              "});",
+              "",
+              "pm.test(\"Server handles oversized input gracefully\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('error');",
+              "    pm.expect(jsonData.error.length).to.be.greaterThan(5);",
+              "});",
+              "",
+              "pm.test(\"Response time is under 3000ms\", function () {",
+              "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"style\": " + JSON.stringify(new Array(100).fill("Fast-Paced")) + ",\n  \"theme\": " + JSON.stringify(new Array(100).fill("Adventure")) + ",\n  \"category\": " + JSON.stringify(new Array(100).fill("Travel")) + "\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/get_trend_story",
+          "host": ["{{base_url}}"],
+          "path": ["get_trend_story"]
+        },
+        "description": "Stress test with very large lists to check server limits."
+      }
+    }
+  ]
+{
+  "name": "Get Trend Story - Conflicting Styles and Themes",
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "exec": [
+          "pm.test(\"Status code is 200\", function () {",
+          "    pm.response.to.have.status(200);",
+          "});",
+          "",
+          "pm.test(\"Story tries to reconcile conflicting inputs\", function () {",
+          "    var jsonData = pm.response.json();",
+          "    pm.expect(jsonData).to.have.property('story');",
+          "    pm.expect(jsonData.story).to.be.a('string');",
+          "    pm.expect(jsonData.story.length).to.be.greaterThan(80);",
+          "    pm.expect(jsonData.story.toLowerCase()).to.include('yet'); // checking if contradiction words exist",
+          "});",
+          "",
+          "pm.test(\"Response does not contain crash markers\", function () {",
+          "    pm.expect(pm.response.text()).to.not.include('Exception');",
+          "    pm.expect(pm.response.text()).to.not.include('Traceback');",
+          "});",
+          "",
+          "pm.test(\"Response time is acceptable\", function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(2500);",
+          "});"
+        ],
+        "type": "text/javascript"
+      }
+    }
+  ],
+  "request": {
+    "method": "POST",
+    "header": [
+      { "key": "Content-Type", "value": "application/json" }
+    ],
+    "body": {
+      "mode": "raw",
+      "raw": "{\n  \"style\": [\"Fast-Paced\", \"Calm\"],\n  \"theme\": [\"War\", \"Peace\"],\n  \"category\": [\"Politics\"]\n}"
+    },
+    "url": {
+      "raw": "{{base_url}}/get_trend_story",
+      "host": ["{{base_url}}"],
+      "path": ["get_trend_story"]
+    },
+    "description": "Testing how the model handles logically conflicting themes and styles."
+  }
+}
+
+{
+  "name": "Get Trend Story - Extremely Long Single Theme",
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "exec": [
+          "pm.test(\"Status code is 200\", function () {",
+          "    pm.response.to.have.status(200);",
+          "});",
+          "",
+          "pm.test(\"Response contains long coherent story\", function () {",
+          "    var jsonData = pm.response.json();",
+          "    pm.expect(jsonData.story).to.be.a('string');",
+          "    pm.expect(jsonData.story.length).to.be.greaterThan(500);",
+          "});",
+          "",
+          "pm.test(\"No repetition in story\", function () {",
+          "    var text = pm.response.json().story.toLowerCase();",
+          "    pm.expect((text.match(/adventure/g) || []).length).to.be.below(10);",
+          "});",
+          "",
+          "pm.test(\"Response time under 4000ms\", function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(4000);",
+          "});"
+        ],
+        "type": "text/javascript"
+      }
+    }
+  ],
+  "request": {
+    "method": "POST",
+    "header": [
+      { "key": "Content-Type", "value": "application/json" }
+    ],
+    "body": {
+      "mode": "raw",
+      "raw": "{\n  \"style\": [\"Descriptive\"],\n  \"theme\": [\"The Unending Quest for Adventure in a Post-Apocalyptic World Shrouded in Mystery and Lost Civilizations\"],\n  \"category\": [\"Sci-Fi\"]\n}"
+    },
+    "url": {
+      "raw": "{{base_url}}/get_trend_story",
+      "host": ["{{base_url}}"],
+      "path": ["get_trend_story"]
+    },
+    "description": "Testing extremely long single input theme to check for tokenizer overflow or performance lag."
+  }
+}
+
+{
+  "name": "Get Trend Story - Invalid Data Types",
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "exec": [
+          "pm.test(\"Status code is 400\", function () {",
+          "    pm.response.to.have.status(400);",
+          "});",
+          "",
+          "pm.test(\"Returns validation error\", function () {",
+          "    var jsonData = pm.response.json();",
+          "    pm.expect(jsonData.error).to.match(/invalid/i);",
+          "});"
+        ],
+        "type": "text/javascript"
+      }
+    }
+  ],
+  "request": {
+    "method": "POST",
+    "header": [
+      { "key": "Content-Type", "value": "application/json" }
+    ],
+    "body": {
+      "mode": "raw",
+      "raw": "{\n  \"style\": \"Fast-Paced\",\n  \"theme\": {\"adventure\": true},\n  \"category\": 123\n}"
+    },
+    "url": {
+      "raw": "{{base_url}}/get_trend_story",
+      "host": ["{{base_url}}"],
+      "path": ["get_trend_story"]
+    },
+    "description": "Sending wrong data types instead of arrays to check input validation."
+  }
+}
+{
+  "name": "Get Trend Story - Missing Fields",
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "exec": [
+          "pm.test(\"Status code is 400\", function () {",
+          "    pm.response.to.have.status(400);",
+          "});",
+          "",
+          "pm.test(\"Proper missing field error\", function () {",
+          "    var jsonData = pm.response.json();",
+          "    pm.expect(jsonData.error).to.match(/missing.*style|theme|category/i);",
+          "});"
+        ],
+        "type": "text/javascript"
+      }
+    }
+  ],
+  "request": {
+    "method": "POST",
+    "header": [
+      { "key": "Content-Type", "value": "application/json" }
+    ],
+    "body": {
+      "mode": "raw",
+      "raw": "{\n  \"theme\": [\"Drama\"],\n  \"category\": [\"Entertainment\"]\n}"
+    },
+    "url": {
+      "raw": "{{base_url}}/get_trend_story",
+      "host": ["{{base_url}}"],
+      "path": ["get_trend_story"]
+    },
+    "description": "Intentionally missing the 'style' field to test field validation."
+  }
+}
+
+
+}
